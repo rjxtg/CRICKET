@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+<title>Live Player</title>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+
+<link rel="stylesheet" href="https://cdn.plyr.io/3.7.8/plyr.css">
+
+<script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+
+<script src="https://cdn.plyr.io/3.7.8/plyr.js"></script>
+
+<style>
+
+body{
+margin:0;
+background:#000;
+overflow:hidden;
+font-family:Arial;
+}
+
+#player-wrap{
+width:100%;
+height:100vh;
+position:relative;
+background:#000;
+}
+
+video{
+width:100%;
+height:100%;
+}
+
+#loader{
+position:fixed;
+top:0;
+left:0;
+width:100%;
+height:100%;
+background:#000;
+display:flex;
+align-items:center;
+justify-content:center;
+color:white;
+font-size:20px;
+z-index:999;
+}
+
+#error{
+position:absolute;
+top:0;
+left:0;
+width:100%;
+height:100%;
+display:none;
+align-items:center;
+justify-content:center;
+flex-direction:column;
+background:#000;
+color:white;
+z-index:20;
+}
+
+#error button{
+margin-top:10px;
+padding:10px 20px;
+background:#ff0033;
+border:none;
+color:white;
+cursor:pointer;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div id="loader">Loading Stream...</div>
+
+<div id="player-wrap">
+
+<div id="error">
+<div>Stream Unavailable</div>
+<button onclick="location.reload()">Retry</button>
+</div>
+
+<video id="player" controls playsinline></video>
+
+</div>
+
+<script>
+
+const params = new URLSearchParams(window.location.search);
+const stream = params.get("stream");
+
+const video = document.getElementById("player");
+const loader = document.getElementById("loader");
+const error = document.getElementById("error");
+
+if(!stream){
+loader.innerHTML="No stream provided in URL";
+throw new Error("No stream");
+}
+
+if(Hls.isSupported()){
+
+const hls = new Hls();
+
+hls.loadSource(stream);
+
+hls.attachMedia(video);
+
+hls.on(Hls.Events.MANIFEST_PARSED,function(){
+
+loader.style.display="none";
+video.play();
+
+});
+
+hls.on(Hls.Events.ERROR,function(){
+
+loader.style.display="none";
+error.style.display="flex";
+
+});
+
+}
+
+else if(video.canPlayType("application/vnd.apple.mpegurl")){
+
+video.src = stream;
+
+video.addEventListener("loadedmetadata",function(){
+
+loader.style.display="none";
+video.play();
+
+});
+
+}
+
+const player = new Plyr(video);
+
+</script>
+
+</body>
+</html>
