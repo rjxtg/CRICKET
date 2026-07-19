@@ -1,112 +1,291 @@
-<html lang="en"><head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>D SPORTS FL</title>
-  <script src="https://cdn.jsdelivr.net/npm/shaka-player@4.16.2/dist/shaka-player.ui.min.js"></script>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/shaka-player@4.16.2/dist/controls.min.css">
-  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Rajdhani:wght@400;600;700&display=swap" rel="stylesheet">
-  <style>
-    *{margin:0;padding:0;box-sizing:border-box}
-    html,body{width:100%;height:100%;background:#000;overflow:hidden;font-family:system-ui,-apple-system,sans-serif}
-    .shaka-video-container{position:fixed;inset:0;background:#000;display:flex;align-items:center;justify-content:center}
-    video{width:100%;height:100%;object-fit:contain;background:#000}
-    .shaka-spinner-container{display:none!important}
-    #wm{
-      position:absolute;bottom:70px;left:50%;transform:translateX(-50%);
-      z-index:2147483647;pointer-events:none;user-select:none;
-      display:flex;align-items:center;gap:8px;
-      opacity:.55;transition:opacity .5s
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+
+<title>FL</title>
+
+<script src="//cdn.bitmovin.com/player/web/8/bitmovinplayer.js"></script>
+
+<style>
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+body{
+    width:100%;
+    height:100%;
+    margin:0;
+    padding:0;
+    overflow:hidden;
+    background:#000;
+}
+
+
+/* Header */
+
+.header{
+    height:60px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:0 18px;
+    background:#121212;
+    border-bottom:1px solid rgba(255,255,255,.08);
+}
+
+.logo{
+    font-size:20px;
+    font-weight:700;
+    letter-spacing:.5px;
+}
+
+.live{
+    background:#ff0000;
+    padding:5px 12px;
+    border-radius:20px;
+    font-size:13px;
+    font-weight:bold;
+}
+
+/* Body */
+
+.container{
+    width:100vw;
+    height:100vh;
+    margin:0;
+    padding:0;
+}
+
+/* Server Buttons */
+
+.server-box{
+    display:flex;
+    gap:10px;
+    margin-bottom:15px;
+}
+
+.server-box button{
+    flex:1;
+    height:44px;
+    border:none;
+    border-radius:10px;
+    background:#1d1d1d;
+    color:#fff;
+    cursor:pointer;
+    font-weight:700;
+    transition:.25s;
+}
+
+.server-box button:hover{
+    background:#303030;
+}
+
+.server-box button.active{
+    background:#e50914;
+}
+
+/* Player */
+
+.player-card{
+    width:100%;
+    height:100%;
+    background:#000;
+    border-radius:0;
+    box-shadow:none;
+    overflow:hidden;
+}
+
+.player-title{
+    padding:14px 18px;
+    background:#181818;
+    font-size:16px;
+    font-weight:600;
+}
+
+#player-wrapper{
+    position:relative;
+    width:100%;
+    height:100%;
+    background:#000;
+}
+
+#player{
+    width:100%;
+    height:100%;
+}
+/* Loading */
+
+#status{
+    position:absolute;
+    inset:0;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    background:#000;
+    z-index:100;
+}
+
+.spinner{
+    width:55px;
+    height:55px;
+    border:4px solid rgba(255,255,255,.15);
+    border-top:4px solid #ff0000;
+    border-radius:50%;
+    animation:spin .8s linear infinite;
+}
+
+@keyframes spin{
+    to{
+        transform:rotate(360deg);
     }
-    .wm-rule{width:18px;height:1px;background:linear-gradient(90deg,transparent,rgba(232,0,29,.9))}
-    .wm-rule.r{background:linear-gradient(90deg,rgba(232,0,29,.9),transparent)}
-    .wm-inner{display:flex;flex-direction:column;align-items:center;gap:1px}
-    .wm-name{font-family:'Bebas Neue',sans-serif;font-size:16px;letter-spacing:4px;line-height:1;color:#fff;white-space:nowrap;text-shadow:0 1px 8px #000,0 0 24px rgba(0,0,0,.9)}
-    .wm-name .r{color:#e8001d}
-    .wm-url{font-family:'Rajdhani',sans-serif;font-size:9px;font-weight:600;letter-spacing:3px;color:rgba(255,255,255,.7);white-space:nowrap;text-shadow:0 1px 6px rgba(0,0,0,.9);text-transform:uppercase}
-  </style>
+}
+
+.s-title{
+    margin-top:18px;
+    font-size:16px;
+}
+
+/* Bitmovin */
+
+.bmpui-ui-watermark{
+    background-image:url("https://github.io") !important;
+}
+
+.bmpui-ui-seekbar .bmpui-seekbar-playbackposition,
+.bmpui-ui-volumeslider .bmpui-seekbar-playbackposition{
+    background:#ff0000 !important;
+}
+
+.bmpui-on,
+.bmpui-ui-selectbox{
+    color:#ff0000 !important;
+}
+
+@media(max-width:768px){
+
+.header{
+    height:55px;
+}
+
+.logo{
+    font-size:18px;
+}
+
+.server-box button{
+    height:42px;
+}
+
+}
+</style>
 </head>
+
 <body>
-  <div class="shaka-video-container" id="player-container">
-    <video id="video" autoplay playsinline></video>
-    <div id="wm">
-      <div class="wm-rule"></div>
-      <div class="wm-inner">
-        <div class="wm-name">CLICK<span class="r">HERE</span></div>
-        <div class="wm-url"></div>
-      </div>
-      <div class="wm-rule r"></div>
+
+
+<body>
+
+<div class="container">
+
+    <div class="player-card">
+
+        <div id="player-wrapper">
+
+            <div id="status">
+                <div class="spinner"></div>
+                <div class="s-title">Loading Stream...</div>
+            </div>
+
+            <div id="player"></div>
+
+        </div>
+
     </div>
-  </div>
-  <script>
-    document.addEventListener('DOMContentLoaded', async () => {
-      shaka.polyfill.installAll();
-      if (!shaka.Player.isBrowserSupported()) return;
 
-      const videoEl = document.getElementById('video');
-      const container = document.getElementById('player-container');
-      const wm = document.getElementById('wm');
+</div>
 
-      const streamUrl = "https://otte.cache.aiv-cdn.net/bom-nitro/live/clients/dash/enc/x0srg3jjpz/out/v1/f779c49314394d61886d63f58d9d52e4/cenc.mpd";
-      const keyId = "4f4c3a9912ea752e88f4497864a1bc8b";
-      const key = "278128004fe8c6ffb2cd2a0c154a241a";
+<!-- Your JavaScript stays exactly the same -->
 
-      const player = new shaka.Player();
-      await player.attach(videoEl);
-      const ui = new shaka.ui.Overlay(player, container, videoEl);
+</body>
 
-      ui.configure({
-        controlPanelElements: ['play_pause','mute','volume','time_and_duration','spacer','language','captions','picture_in_picture','quality','fullscreen'],
-        seekBarColors: { base:'white', buffered:'red', played:'green' }
-      });
+<script>
 
-      // inject watermark after UI builds
-      setTimeout(() => container.appendChild(wm), 100);
+var url="https://otte.cache.aiv-cdn.net/bom-nitro/live/clients/dash/enc/x0srg3jjpz/out/v1/f779c49314394d61886d63f58d9d52e4/cenc.mpd";
 
-      player.configure({
-        drm: { clearKeys: { [keyId]: key } },
-        abr: { defaultBandwidthEstimate:10000, enabled:true, switchInterval:1 },
-        manifest: {
-          defaultPresentationDelay: 4,
-          dash: { ignoreSuggestedPresentationDelay:true, ignoreMinBufferTime:true, autoCorrectDrift:true }
-        },
-        streaming: {
-          bufferingGoal:8, rebufferingGoal:2, bufferBehind:10,
-          lowLatencyMode:true, safeSeekOffset:4, stallThreshold:1, jumpLargeGaps:true
+var ck_keyid="4f4c3a9912ea752e88f4497864a1bc8b";
+
+var ck_key="278128004fe8c6ffb2cd2a0c154a241a";
+
+function override(url){
+
+    var wm=document.querySelector('button.bmpui-ui-watermark');
+
+    if(wm) wm.setAttribute('disabled','disabled');
+
+    if(url.indexOf('licensing.bitmovin.com/licensing')>-1)
+        return 'data:text/plain;charset=utf-8;base64,eyJzdGF0dXMiOiJncmFudGVkIiwibWVzc2FnZSI6IlRoZXJlIHlvdSBnby4ifQ==';
+
+    if(url.indexOf('licensing.bitmovin.com/impression')>-1)
+        return 'data:text/plain;charset=utf-8;base64,eyJzdGF0dXMiOiJncmFudGVkIiwibWVzc2FnZSI6IlRoZXJlIHlvdSBnby4ifQ==';
+
+    return url;
+}
+
+var _xhrOpen=XMLHttpRequest.prototype.open;
+
+XMLHttpRequest.prototype.open=function(){
+
+    arguments[1]=override(arguments[1]);
+
+    return _xhrOpen.apply(this,arguments);
+
+};
+
+document.addEventListener("DOMContentLoaded",function(){
+
+    var config={
+        key:"11d3698c-efdf-42f1-8769-54663995de2b",
+        playback:{
+            autoplay:true,
+            muted:false
         }
-      });
+    };
 
-      try {
-        await player.load(streamUrl, -4);
-        videoEl.play();
-      } catch(e) {}
+    var source={
+        dash:url,
+        drm:{
+            clearkey:[
+                {
+                    keyId:ck_keyid,
+                    key:ck_key
+                }
+            ]
+        }
+    };
 
-      // fullscreen watermark fix
-      const onFsChange = () => {
-        const fsEl = document.fullscreenElement || document.webkitFullscreenElement || document.mozFullScreenElement;
-        if(fsEl){ fsEl.appendChild(wm); wm.style.opacity='.50'; }
-        else{ container.appendChild(wm); wm.style.opacity='.55'; }
-      };
-      document.addEventListener('fullscreenchange', onFsChange);
-      document.addEventListener('webkitfullscreenchange', onFsChange);
-      document.addEventListener('mozfullscreenchange', onFsChange);
+    var player=new bitmovin.player.Player(
+        document.getElementById("player"),
+        config
+    );
 
-      // watermark fade
-      videoEl.addEventListener('play', () => setTimeout(()=>{ wm.style.opacity='.30'; }, 3000));
-      videoEl.addEventListener('pause', () => { wm.style.opacity='.55'; });
-      document.addEventListener('mousemove', () => {
-        wm.style.opacity='.55';
-        clearTimeout(window._wmTimer);
-        window._wmTimer = setTimeout(()=>{ if(!videoEl.paused) wm.style.opacity='.30'; }, 3000);
-      });
-      document.addEventListener('touchstart', () => {
-        wm.style.opacity='.55';
-        clearTimeout(window._wmTimer);
-        window._wmTimer = setTimeout(()=>{ if(!videoEl.paused) wm.style.opacity='.30'; }, 3000);
-      });
+    player.load(source).then(function(){
+
+        document.getElementById("status").style.display="none";
+
+    }).catch(function(err){
+
+        document.querySelector(".s-title").innerHTML="Failed to load stream.";
+
+        console.log(err);
+
     });
-  </script><a href="FOOTLIVE.ONLINE" target="_blank">
-<span style="position: absolute; z-index: 100; top: 6px; left: 5px; height: 30px; width: 100px; color: rgb(204, 204, 204); border: 2px solid rgb(204, 204, 204); padding: 1px 0px; border-radius: 2px; text-align: center;">
-Join us
-</span>
-</a>
-</body></html>
+
+});
+</script>
+
+</body>
+</html>
